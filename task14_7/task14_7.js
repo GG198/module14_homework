@@ -13,35 +13,37 @@ function pageLoaded() {
   
   function sendRequest() {
     if (input.value !== '') {
-      fetch(`//jsonplaceholder.typicode.com/users/${input.value}/todos`)
+      fetch(`https://jsonplaceholder.typicode.com/users/${input.value}/todos`) // лучше писать полную ссылку на API, включая протокол
       .then(response => {
         return response.json();
       // console.log(response.json());
       })
       .then(data => {
         writeOutput(formatOutput(data));
-        //console.log(data);
-       
-        
+        // console.log(data);
       })
     }
   }
   
+  // Вывод сделан неверно, т.к. выводить данные нужно на страницу, где их будет видеть пользователь, не в консоль.
+  // Судя по закомментированным строкам, вы были на верном пути :) поправила код
   function formatOutput(data) {
-    for(let i in data){
-      let outout;
-          // if(data[i].userId == input.value){
-             if(data[i].userId == input.value && data[i].completed === true){
-               console.log(data[i].title);
-                /*return output = 
-                 `<li><strike>${data[i].title}</strike></li>`*/
-             }  else {  
-                console.log(`зачеркнуть: ${data[i].title}`);
-                //writeOutput(formatOutput(data));
+    if (data.length) { // если пользователь с таким id существует и в ответе пришёл массив задач, выводим их
+      let resultHTML = '<ol>'
+      data.forEach(task => {
+        if (task.completed) {
+          resultHTML += `<li><strike>${task.title}</strike></li>`;
+        } else {
+          resultHTML += `<li>${task.title}</li>`;
         }
-        
-        }
-   
+      });
+      resultHTML += '</ol>';
+      return resultHTML;
+    } else {
+      // Если пользователя с таким id нет, выводим соответствующее сообщение
+      return 'Пользователь с указанным id не найден';
+    }
+    
   }
   
   function writeOutput(message) {
